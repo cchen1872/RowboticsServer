@@ -43,11 +43,13 @@ class Listener(Resource):
             return None
         
         listening_probe = True
+        msg = format_sse(data='opening', event='open')
+        announcer.announce(msg=msg)
         return Response(stream(), mimetype='text/event-stream')
 
 
-@api.route('/end_stream')
-class EndStream(Resource):
+@api.route('/close')
+class CloseStream(Resource):
     """
     The purpose of the HelloWorld class is to have a simple test to see if the
     app is working at all.
@@ -55,7 +57,7 @@ class EndStream(Resource):
     def patch(self):
         global listening_probe
         listening_probe = False
-        msg = format_sse(data='finished')
+        msg = format_sse(data='finished', event='close')
         announcer.announce(msg=msg)
         
 
@@ -67,7 +69,7 @@ class Ping(Resource):
     app is working at all.
     """
     def patch(self):
-        msg = format_sse(data='pong')
+        msg = format_sse(data='pong', event='ping')
         announcer.announce(msg=msg)
         return {}, 200
 
