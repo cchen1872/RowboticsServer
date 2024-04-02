@@ -69,7 +69,7 @@ class Ping(Resource):
     app is working at all.
     """
     def patch(self):
-        msg = format_sse(data='pong', event='ping')
+        msg = format_sse(data='pong')
         announcer.announce(msg=msg)
         return {}, 200
 
