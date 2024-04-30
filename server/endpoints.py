@@ -17,7 +17,6 @@ from os import getpid, kill
 from signal import SIGTERM
 from data.MessageAnnouncer import MessageAnnouncer
 from data.sse import format_sse
-from threading import Thread, Lock
 import data.users as users
 import time
 
@@ -27,7 +26,6 @@ api = Api(app)
 
 announcer = MessageAnnouncer()
 listening_probe = False
-mutex = Lock()
 
 @api.route('/listen/<username>')
 class Listener(Resource):
