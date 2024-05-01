@@ -1,4 +1,5 @@
 import queue
+from threading import Lock, Condition
 
 class MessageAnnouncer:
 # Can send queue id to user and have them send it with the close request
@@ -6,23 +7,46 @@ class MessageAnnouncer:
     def __init__(self):
         self.listener = None
         self.user = None
+        self.lock = Lock()
+        self.empty_cv = Condition(self.lock)
 
-    def listen(self, username):
-        self.user = username
-        q = queue.Queue(maxsize=50)
-        self.listeners = q
+    def listen(self):
+        q = queue.Queue(maxsize=200)
+        self.listener = q
+        print(self.listener)
         return q
+    
+    def get(self):
+        print("getting")
+        print("im in")
+        if self.listener is None:
+            msg = ""
+        else:
+            self.lock.acquire()
+            print("gonna get")
+            print(self.listener.qsize())
+            while self.listener.empty():
+                print("gonna wait until notified")
+                self.empty_cv.wait()
+            msg = self.listener.get()
+            self.lock.release()
+        print(msg)
+        return msg
 
     def announce(self, msg):
-        try:
-            self.listeners.put_nowait(msg)
-        except queue.Full:
-            del self.listeners
+        print("ANNOUNCING")
+        print("IM IN")
+        if self.listener is not None:
+            self.lock.acquire()
+            self.listener.put_nowait(msg)
+            self.empty_cv.notify_all()
+            self.lock.release()
+
     
     def close(self):
         # call function, send summary to mongo db
         self.user = None
-        q = None
+        self.listener = None
     
     def isOpen(self):
         return self.listener is not None

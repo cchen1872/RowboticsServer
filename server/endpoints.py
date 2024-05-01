@@ -13,37 +13,51 @@ from http.client import (
     NO_CONTENT,
     BAD_REQUEST
 )
-from os import getpid, kill
-from signal import SIGTERM
-from data.MessageAnnouncer import MessageAnnouncer
 from data.sse import format_sse
 import data.users as users
 import time
+from threading import Thread
+from data.MessageAnnouncer import MessageAnnouncer
 
 app = Flask(__name__)
 CORS(app, resources={r'/*': {'origins': '*', "access-control-allow-origin": "*"}})
 api = Api(app)
 
-announcer = MessageAnnouncer()
-listening_probe = False
 
-@api.route('/listen/<username>')
+listening_probe = False
+announcer = MessageAnnouncer()
+
+@api.route('/listen')
 class Listener(Resource):
     """
     The purpose of the HelloWorld class is to have a simple test to see if the
     app is working at all.
     """
-    def get(self, username) -> dict:
+    def get(self) -> dict:
         global listening_probe
+        global announcer
+        # def stream(thread):
         def stream():
+            global announcer
             # global listening_probe
-            messages = announcer.listen(username)  # returns a queue.Queue
+            announcer.listen()  # returns a queue.Queue
+            # print(f'{listening_probe=}')
+            # print(f'{announcer.listener=}')
             while listening_probe:
-                msg = messages.get()  # blocks until a new message arrives
+                msg = announcer.get()  # blocks until a new message arrives
                 yield msg
+            # thread.join()
             return None
         
+        if announcer.isOpen():
+            return None
+        # print("SDFJKJFSKL")
+        # print(f'{listening_probe=}')
         listening_probe = True
+        # thread = Thread(target=monitorSensors, args=("SensorThread", announcer))
+        # thread.daemon = True
+        # thread.start()
+        # return Response(stream(thread), mimetype='text/event-stream')
         return Response(stream(), mimetype='text/event-stream')
 
 @api.route('/test')
@@ -64,6 +78,7 @@ class OpenStream(Resource):
     """
     def patch(self):
         global listening_probe
+        global announcer
         if listening_probe:
             msg = format_sse(data='opening', event='open')
             announcer.announce(msg=msg)
@@ -77,6 +92,7 @@ class CloseStream(Resource):
     """
     def patch(self):
         global listening_probe
+        global announcer
         if listening_probe:
             listening_probe = False
             msg = format_sse(data='finished', event='close')
@@ -93,6 +109,7 @@ class Ping(Resource):
     """
     def patch(self):
         global listening_probe
+        global announcer
         if listening_probe:
             t_obj = time.time()
             msg = format_sse(data=t_obj)
