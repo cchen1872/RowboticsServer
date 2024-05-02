@@ -113,8 +113,15 @@ class Ping(Resource):
         global announcer
         print(listening_probe)
         if listening_probe:
-            t_obj = time.time()
-            msg = format_sse(data=t_obj, event='message')
+            d = {"twist_angle":"30",
+                "in_water":"IN WATER",
+                "time_diff_sec":15,
+                "time_diff_min":1,
+                "pace": 13,
+                "boat_dist": 1300,
+                "stroke_rate": 60,               
+            }
+            msg = format_sse(data=str(d), event='message')
             announcer.announce(msg=msg)
             return {}, 200
         else:

@@ -1,4 +1,5 @@
 import data.sensors.TCA9548A as TCA9548A
+from data.sse import format_sse
 
 import smbus, time, sys, math
 import RPi.GPIO as GPIO
@@ -28,6 +29,8 @@ LEVEL_TWIST = 0 #Subject to change on calibration
 MIN_START_MOVING = 5
 
 IN_WATER_ANGLE = -15
+
+ANGLE_INCREMENTS = 15
 
 c = 2.8
 
@@ -140,14 +143,16 @@ def ReadSensors(dummy, announcer):
             empty_angle_slots -= 1
         
         if flywheel_moving:
-            dictionary = {"twist_angle":twist_angle,
-                          "in_water":height_angle > IN_WATER_ANGLE,
+            dictionary = {"twist_angle":(twist_angle - LEVEL_TWIST) % ANGLE_INCREMENTS,
+                          "in_water":"IN WATER" if (height_angle > IN_WATER_ANGLE) else "OUT OF WATER",
                           "time_diff_sec":(curr_time - start_time) % 60 // 1,
                           "time_diff_min":(curr_time - start_time) // 60,
-                          "boat_vel": pow(P/c, 1/3),
-                          "boat_dist": pow(k/c, 1/3) * flywheel_rotations                 
+                          "pace": 500/60/pow(P/c, 1/3),
+                          "boat_dist": pow(k/c, 1/3) * flywheel_rotations,
+                          "stroke_rate": total_strokes / ((curr_time - start_time) // 1),               
                           }
-            announcer.announce(str(dictionary))
+            msg = format_sse(data=dictionary, event='message')
+            announcer.announce(msg)
         
         
         time.sleep(0.10)
