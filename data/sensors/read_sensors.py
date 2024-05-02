@@ -131,7 +131,10 @@ def ReadSensors(dummy, queue):
                 alpha /= total_time
             else:
                 empty_vel_slots -= 1
-            k=-I*alpha*1/(omega^2)*180/math.pi
+            if omega == 0:
+                k = 0
+            else:
+                k=-I*alpha*1/pow(omega, 2)*180/math.pi
             P = I * alpha * omega * pow(math.pi/180, 3)
         else:
             empty_angle_slots -= 1
