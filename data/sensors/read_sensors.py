@@ -149,7 +149,7 @@ def ReadSensors(dummy, announcer):
                           "time_diff_min":(curr_time - start_time) // 60,
                           "pace": 500/60/pow(P/c, 1/3) if pow(P/c, 1/3) else 0,
                           "boat_dist": pow(k/c, 1/3) * flywheel_rotations,
-                          "stroke_rate": total_strokes / ((curr_time - start_time) // 1),               
+                          "stroke_rate": total_strokes / ((curr_time - start_time)),               
                           }
             msg = format_sse(data=dictionary, event='message')
             announcer.announce(msg)
