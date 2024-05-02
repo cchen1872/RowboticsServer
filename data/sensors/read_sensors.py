@@ -43,7 +43,7 @@ def MoveMotor(direction, angle): #move motor angle degrees. CW = False CCW = Tru
     
     mymotortest.motor_run(gpio_pins , 0.001, angle*50/360, direction, False, "half", .001)
 
-def ReadSensors(dummy, queue):
+def ReadSensors(dummy, announcer):
     last_five_angles = [None] * 5
     empty_angle_slots = 5
     curr_angle_slot = 0
@@ -63,7 +63,7 @@ def ReadSensors(dummy, queue):
     
     flywheel_rotations = 0
     last_angle = -1
-    while True:
+    while announcer.isOpen():
         P = 0 # initialize power
         k = 0 # initialize drag factor
         
@@ -147,7 +147,7 @@ def ReadSensors(dummy, queue):
                           "boat_vel": pow(P/c, 1/3),
                           "boat_dist": pow(k/c, 1/3) * flywheel_rotations                 
                           }
-            queue.announce(str(dictionary))
+            announcer.announce(str(dictionary))
         
         
         time.sleep(0.10)
