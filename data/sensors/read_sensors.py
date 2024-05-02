@@ -147,7 +147,7 @@ def ReadSensors(dummy, queue):
                           "boat_vel": pow(P/c, 1/3),
                           "boat_dist": pow(k/c, 1/3) * flywheel_rotations                 
                           }
-            queue.announce(dictionary)
+            queue.announce(str(dictionary))
         
         
         time.sleep(0.10)
