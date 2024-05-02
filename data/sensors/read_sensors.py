@@ -124,8 +124,8 @@ def ReadSensors(dummy, queue):
                 
             if empty_vel_slots == 0:
                 for i in range(1, 5):
-                    time_change = last_five_angles[i]["time"] - last_five_angles[i - 1]["time"]
-                    vel_change = last_five_angles[i]["velocity"] - last_five_angles[i - 1]["velocity"]
+                    time_change = last_five_velocities[i]["time"] - last_five_velocities[i - 1]["time"]
+                    vel_change = last_five_velocities[i]["velocity"] - last_five_velocities[i - 1]["velocity"]
                     alpha += (vel_change) * time_change
                     total_time += time_change
                 alpha /= total_time
