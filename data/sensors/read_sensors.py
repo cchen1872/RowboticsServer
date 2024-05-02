@@ -147,7 +147,7 @@ def ReadSensors(dummy, announcer):
                           "in_water":"IN WATER" if (height_angle > IN_WATER_ANGLE) else "OUT OF WATER",
                           "time_diff_sec":(curr_time - start_time) % 60 // 1,
                           "time_diff_min":(curr_time - start_time) // 60,
-                          "pace": 500/60/pow(P/c, 1/3),
+                          "pace": 500/60/pow(P/c, 1/3) if pow(P/c, 1/3) else 0,
                           "boat_dist": pow(k/c, 1/3) * flywheel_rotations,
                           "stroke_rate": total_strokes / ((curr_time - start_time) // 1),               
                           }
