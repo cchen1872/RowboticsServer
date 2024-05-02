@@ -18,6 +18,7 @@ import data.users as users
 import time
 from threading import Thread
 from data.MessageAnnouncer import MessageAnnouncer
+from data.sensors.read_sensors import ReadSensors
 
 app = Flask(__name__)
 CORS(app, resources={r'/*': {'origins': '*', "access-control-allow-origin": "*"}})
@@ -37,7 +38,7 @@ class Listener(Resource):
         global listening_probe
         global announcer
         # def stream(thread):
-        def stream():
+        def stream(thread):
             global announcer
             # global listening_probe
             announcer.listen()  # returns a queue.Queue
@@ -46,19 +47,19 @@ class Listener(Resource):
             while listening_probe:
                 msg = announcer.get()  # blocks until a new message arrives
                 yield msg
-            # thread.join()
+            thread.join()
             return None
         
         if announcer.isOpen():
             return None
-        # print("SDFJKJFSKL")
-        # print(f'{listening_probe=}')
         listening_probe = True
-        # thread = Thread(target=monitorSensors, args=("SensorThread", announcer))
-        # thread.daemon = True
-        # thread.start()
-        # return Response(stream(thread), mimetype='text/event-stream')
-        return Response(stream(), mimetype='text/event-stream')
+        print("SDFJKJFSKL")
+        print(f'{listening_probe=}')
+        thread = Thread(target=ReadSensors, args=("SensorThread", announcer))
+        thread.daemon = True
+        thread.start()
+        return Response(stream(thread), mimetype='text/event-stream')
+        # return Response(stream(), mimetype='text/event-stream')
 
 @api.route('/test')
 class Tester(Resource):
@@ -110,9 +111,10 @@ class Ping(Resource):
     def patch(self):
         global listening_probe
         global announcer
+        print(listening_probe)
         if listening_probe:
             t_obj = time.time()
-            msg = format_sse(data=t_obj)
+            msg = format_sse(data=t_obj, event='message')
             announcer.announce(msg=msg)
             return {}, 200
         else:
