@@ -24,17 +24,19 @@ bus = smbus.SMBus(1)
 
 I= 0.1001 #kg m^2
 
-LEVEL_TWIST = 0 #Subject to change on calibration
+LEVEL_TWIST = 240 #Subject to change on calibration
 
 MIN_START_MOVING = 5
 
 IN_WATER_ANGLE = -15
 
-ANGLE_INCREMENTS = 15
+ANGLE_INCREMENTS = 30
+
+CATCH_ANGLE = 170
 
 c = 2.8
 
-def ReadAngle(channel): # Read angle (0-360 represented as 0-4096)
+def ReadAngle(channel) :# Read angle (0-360 represented as 0-4096)
     TCA9548A.I2C_setup(0x70,channel)
     read_bytes = bus.read_i2c_block_data(AS5600_ADDR, 0x0C, 2)
     raw_angle = (read_bytes[0]<<8) | read_bytes[1]
@@ -143,7 +145,7 @@ def ReadSensors(dummy, announcer):
             empty_angle_slots -= 1
         
         if flywheel_moving and start_time != curr_time:
-            dictionary = {"twist_angle":(twist_angle - LEVEL_TWIST) % ANGLE_INCREMENTS,
+            dictionary = {"twist_angle":(twist_angle - CATCH_ANGLE) % ANGLE_INCREMENTS,
                           "in_water":"IN WATER" if (height_angle > IN_WATER_ANGLE) else "OUT OF WATER",
                           "time_diff_sec":(curr_time - start_time) % 60 // 1,
                           "time_diff_min":(curr_time - start_time) // 60,
