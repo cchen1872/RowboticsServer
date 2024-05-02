@@ -139,8 +139,8 @@ def ReadSensors(dummy, announcer):
             if omega == 0:
                 k = 0
             else:
-                k=-I*alpha*1/pow(omega, 2)*180/math.pi
-            P = I * alpha * omega * pow(math.pi/180, 3)
+                k=abs(I*alpha*1/pow(omega, 2)*180/math.pi)
+            P = abs(I * alpha * omega * pow(math.pi/180, 3))
         else:
             empty_angle_slots -= 1
         
