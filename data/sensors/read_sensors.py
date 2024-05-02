@@ -1,4 +1,4 @@
-import TCA9548A
+import data.sensors.TCA9548A
 
 import smbus, time, sys, math
 import RPi.GPIO as GPIO
