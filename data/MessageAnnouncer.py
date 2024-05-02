@@ -40,7 +40,10 @@ class MessageAnnouncer:
         print("IM IN")
         if self.listener is not None:
             self.lock.acquire()
-            self.listener.put_nowait(msg)
+            try:
+                self.listener.put_nowait(msg)
+            except queue.Full:
+                pass
             self.empty_cv.notify_all()
             self.lock.release()
 
