@@ -12,7 +12,7 @@ class MessageAnnouncer:
         self.close_cv = Condition(self.lock)
 
     def listen(self):
-        q = queue.Queue(maxsize=200)
+        q = queue.Queue(maxsize=2000)
         self.listener = q
         print(self.listener)
         return q
