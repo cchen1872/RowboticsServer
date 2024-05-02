@@ -46,7 +46,7 @@ def ReadAngle(channel) :# Read angle (0-360 represented as 0-4096)
 
 def MoveMotor(direction, angle): #move motor angle degrees. CW = False CCW = True
     
-    mymotortest.motor_run(gpio_pins , 0.001, angle*50/360, direction, False, "half", .001)
+    mymotortest.motor_run(gpio_pins , 0.001, angle*100/360, direction, False, "full", .001)
 
 def ReadSensors(dummy, announcer):
     last_five_angles = [None] * 5
