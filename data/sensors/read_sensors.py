@@ -142,7 +142,7 @@ def ReadSensors(dummy, announcer):
         else:
             empty_angle_slots -= 1
         
-        if flywheel_moving:
+        if flywheel_moving and start_time != curr_time:
             dictionary = {"twist_angle":(twist_angle - LEVEL_TWIST) % ANGLE_INCREMENTS,
                           "in_water":"IN WATER" if (height_angle > IN_WATER_ANGLE) else "OUT OF WATER",
                           "time_diff_sec":(curr_time - start_time) % 60 // 1,
