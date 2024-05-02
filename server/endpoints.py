@@ -38,7 +38,7 @@ class Listener(Resource):
         global listening_probe
         global announcer
         # def stream(thread):
-        def stream(thread):
+        def stream():
             global announcer
             # global listening_probe
             announcer.listen()  # returns a queue.Queue
@@ -47,7 +47,7 @@ class Listener(Resource):
             while listening_probe:
                 msg = announcer.get()  # blocks until a new message arrives
                 yield msg
-            thread.join()
+            # thread.join()
             return None
         
         if announcer.isOpen():
@@ -55,11 +55,11 @@ class Listener(Resource):
         listening_probe = True
         print("SDFJKJFSKL")
         print(f'{listening_probe=}')
-        thread = Thread(target=ReadSensors, args=("SensorThread", announcer))
-        thread.daemon = True
-        thread.start()
-        return Response(stream(thread), mimetype='text/event-stream')
-        # return Response(stream(), mimetype='text/event-stream')
+        # thread = Thread(target=ReadSensors, args=("SensorThread", announcer))
+        # thread.daemon = True
+        # thread.start()
+        # return Response(stream(thread), mimetype='text/event-stream')
+        return Response(stream(), mimetype='text/event-stream')
 
 @api.route('/test')
 class Tester(Resource):
